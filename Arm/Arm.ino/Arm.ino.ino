@@ -39,9 +39,12 @@ Servo sv4;
 #define speaker_on  digitalWrite(speaker,HIGH);
 #define speaker_off digitalWrite(speaker,LOW);
 
-int button1 = 0;
-int button2 = 0;
-int button3 = 0;
+int button1;
+int button2;
+int button3;
+int button1_ = 1;
+int button2_;
+int button3_;
 int val1 = 0;
 int val2 = 0;
 int val3 = 0;
@@ -50,7 +53,7 @@ int k;
 int n;
 int i;
 int time_;
-int count;
+int count = 0;
 int location1[4];
 int location2[4];
 int location3[4];
@@ -106,122 +109,107 @@ void bip(int n,int time_)
     delay(time_);
   }
 }
+void nhay(int n,int time_)
+{
+  for(int i=0;i<=n;i++)
+  {
+    led1_on led2_on led3_on led4_on led5_on   
+    delay(time_);
+    led1_off led2_off led3_off led4_off led5_off 
+    delay(time_);
+  }
+}
 void led_off()
 {
   led1_off led2_off led3_off led4_off led5_off 
 }
-void testSV1()
+void controlSV()
 {
   enable_rc
   val1 = analogRead(DK_sv1);
   val1 = map(val1, 0, 1023, 0, 180);
   sv1.write(val1);
-  //Serial.println(val1);
 
   val2 = analogRead(DK_sv2);
   val2 = map(val2, 0, 1023, 0, 180);
   sv2.write(val2);
-  //Serial.println(val2);
 
   val3 = analogRead(DK_sv3);
   val3 = map(val3, 0, 1023, 0, 180);
   sv3.write(val3);
-  //Serial.println(val3);
 
   val4 = analogRead(DK_sv4);
   val4 = map(val4, 0, 1023, 0, 180);
   sv4.write(val4);
-  //Serial.println(val4);
-}
-void read_button()
-{
-  button1 = digitalRead(BT1);
-  button2 = analogRead(BT2);
-  button3 = analogRead(BT3);
 
-  if(button1 == LOW)
-  {
-    led1_on
-    k = 1;
-    disable_rc
-  }
-  else if(button2 < 100)
-  {
-    led2_on
-    k = 2;
-  }
-  else if(button3 < 100)
-  {
-    led3_on
-    k = 3;
-  }
-  else 
-  {
-    led1_off
-    led2_off
-    led3_off
-  }
+  return val1, val2, val3, val4;
 }
+
 void play()
 {
   button1 = digitalRead(BT1);
   button2 = analogRead(BT2);
   button3 = analogRead(BT3);
-  count = 0;
-  testSV1();
+  controlSV();
   Serial.println(count);
-  if(button1 == LOW)
+  if(button1 != button1_)
   {
-    led1_on
-    count = count++;
+    if(button1 == LOW)
+    {
+      bip(2,100);
+      count++;
+    }
   }
-  if(count == 1)
+  button1 = button1_;
+  switch(count)
   {
-    location1[0] = val1;
-    location2[0] = val2;
-    location3[0] = val3;
-    location4[0] = val4;
-    led1_on
-  }
-  if(count == 2)
-  {
-    location1[1] = val1;
-    location2[1] = val2;
-    location3[1] = val3;
-    location4[1] = val4;
-    led2_on
-  }
-  if(count == 3)
-  {
-    location1[2] = val1;
-    location2[2] = val2;
-    location3[2] = val3;
-    location4[2] = val4;
-    led3_on
-  }
-  if(count == 4)
-  {
-    location1[3] = val1;
-    location2[3] = val2;
-    location3[3] = val3;
-    location4[3] = val4;
-    led4_on
-  }
-  if(count == 5)
-  {
-    location1[4] = val1;
-    location2[4] = val2;
-    location3[4] = val3;
-    location4[4] = val4;
-    led5_on
-  }
-  if(count >= 6)
-  {
-    bip(3,100);
+    case 1:
+      
+      break;
+    case 2:
+      location1[0] = val1;
+      location2[0] = val2;
+      location3[0] = val3;
+      location4[0] = val4;
+      led1_on
+      break;
+    case 3:
+      location1[1] = val1;
+      location2[1] = val2;
+      location3[1] = val3;
+      location4[1] = val4;
+      led2_on
+      break;
+    case 4:
+      location1[2] = val1;
+      location2[2] = val2;
+      location3[2] = val3;
+      location4[2] = val4;
+      led3_on
+      break;
+    case 5:
+      location1[3] = val1;
+      location2[3] = val2;
+      location3[3] = val3;
+      location4[3] = val4;
+      led4_on
+      break;
+    case 6:
+      location1[4] = val1;
+      location2[4] = val2;
+      location3[4] = val3;
+      location4[4] = val4;
+      led5_on
+      break;
+    case 7:
+      nhay(3,200);
+      led_off();
+      count = 0;
+      break;
   }
   if(button2 < 100)
   {
-    led2_on
+    bip(3,150);
     for(i=0;i<=4;i++)
     {
       sv1.write(location1[i]);
