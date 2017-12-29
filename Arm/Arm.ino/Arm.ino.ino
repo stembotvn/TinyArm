@@ -218,7 +218,6 @@ void play()
       delay(300);
     }
   }
-}
 void loop()
 {
   play();
