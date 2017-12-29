@@ -75,10 +75,6 @@ void servo_int()
 void setup()
 {
   Serial.begin(9600);
-//  sv1.attach(pin_sv1);
-//  sv2.attach(pin_sv2);
-//  sv3.attach(pin_sv3);
-//  sv4.attach(pin_sv4);
 
   pinMode(speaker, OUTPUT);
   pinMode(led1, OUTPUT);
@@ -164,41 +160,41 @@ void play()
   switch(count)
   {
     case 1:
-      
-      break;
-    case 2:
       location1[0] = val1;
       location2[0] = val2;
       location3[0] = val3;
       location4[0] = val4;
-      led1_on
+      //led1_on
       break;
-    case 3:
+    case 2:
       location1[1] = val1;
       location2[1] = val2;
       location3[1] = val3;
       location4[1] = val4;
-      led2_on
+      led1_on
       break;
-    case 4:
+    case 3:
       location1[2] = val1;
       location2[2] = val2;
       location3[2] = val3;
       location4[2] = val4;
-      led3_on
+      led2_on
       break;
-    case 5:
+    case 4:
       location1[3] = val1;
       location2[3] = val2;
       location3[3] = val3;
       location4[3] = val4;
-      led4_on
+      led3_on
       break;
-    case 6:
+    case 5:
       location1[4] = val1;
       location2[4] = val2;
       location3[4] = val3;
       location4[4] = val4;
+      led4_on
+      break;
+    case 6:
       led5_on
       break;
     case 7:
