@@ -117,7 +117,11 @@ void nhay(int n,int time_)
 }
 void led_off()
 {
-  led1_off led2_off led3_off led4_off led5_off 
+  led1_off 
+  led2_off 
+  led3_off 
+  led4_off 
+  led5_off 
 }
 void controlSV()
 {
@@ -157,7 +161,7 @@ void play()
     }
   }
   button1 = button1_;
-  switch(count)
+  switch(count) //record location servo
   {
     case 1:
       location1[0] = val1;
@@ -201,9 +205,17 @@ void play()
       nhay(3,200);
       led_off();
       count = 0;
+      for(i=0;i<=4;i++)
+      {
+        location1[i] = val1;
+        location2[i] = val2;
+        location3[i] = val3;
+        location4[i] = val4;
+      }
       break;
   }
-  if(button2 < 100)
+
+  if(button2 < 100) // Write location servo
   {
     bip(3,150);
     for(i=0;i<=4;i++)
