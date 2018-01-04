@@ -1,0 +1,175 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//void setPosition1(int pos1, int lastpos1)
+//{
+//  if(pos1 < lastpos1)
+//  {
+//    for( ; pos1 < lastpos1; pos1++)
+//    {
+//      sv1.write(pos1);
+//      delay(10);
+//    }
+//  }
+//  else if(pos1 > lastpos1)
+//  {
+//    for( ; pos1 > lastpos1; pos1--)
+//    {
+//      sv1.write(pos1);
+//      delay(10);
+//    }
+//  }
+//}
+//
+//void setPosition2(int pos2, int lastpos2)
+//{
+//  if(pos2 < lastpos2)
+//  {
+//    for( ; pos2 < lastpos2; pos2++)
+//    {
+//      sv2.write(pos2);
+//      delay(10);
+//    }
+//  }
+//  else if(pos2 > lastpos2)
+//  {
+//    for( ; pos2 > lastpos2; pos2--)
+//    {
+//      sv2.write(pos2);
+//      delay(10);
+//    }
+//  }
+//}
+//void setPosition3(int pos3, int lastpos3)
+//{
+//  if(pos3 < lastpos3)
+//  {
+//    for( ; pos3 < lastpos3; pos3++)
+//    {
+//      sv3.write(pos3);
+//      delay(50);
+//    }
+//  }
+//  else if(pos3 > lastpos3)
+//  {
+//    for( ; pos3 > lastpos3; pos3--)
+//    {
+//      sv3.write(pos3);
+//      delay(50);
+//    }
+//  }
+//}
+//void setPosition4(int pos4, int lastpos4)
+//{
+//  if(pos4 < lastpos4)
+//  {
+//    for( ; pos4 < lastpos4; pos4++)
+//    {
+//      sv4.write(pos4);
+//      delay(50);
+//    }
+//  }
+//  else if(pos4 > lastpos4)
+//  {
+//    for( ; pos4 > lastpos4; pos4--)
+//    {
+//      sv4.write(pos4);
+//      delay(50);
+//    }
+//  }
+//}
+////////////////////////
+//void controlSV()
+//{
+//  readPot();
+//  if(val1 != lastval1)                                      // If the value has changed then update the servo
+//  {
+//    setPosition1(val1, lastval1);                    // Set the servo position
+//    lastval1 = val1;                                        // reset to last state
+//  }
+//  else if(val2 != lastval2)
+//  {
+//    setPosition2(val2, lastval2);
+//    lastval2 = val2;
+//  }
+//  else if(val3 != lastval3)
+//  {
+//    setPosition3(val3, lastval3);
+//    lastval3 = val3;
+//  }
+//  else if(val4 != lastval4)
+//  {
+//    setPosition4(val4, lastval4);
+//    lastval4 = val4;
+//  }
+//}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//void controlSV()
+//{
+//  enable_rc
+//  time = millis();
+//  val1_ = val1;
+//  val2_ = val2;
+//  val3_ = val3;
+//  val4_ = val4;
+//  if(time % 100 == 0)
+//  {
+//    val1 = analogRead(DK_sv1);
+//    val2 = analogRead(DK_sv2);
+//    val3 = analogRead(DK_sv3);
+//    val4 = analogRead(DK_sv1);
+//    val1 = map(val1, 0, 1023, 0, 180);
+//    val2 = map(val2, 0, 1023, 0, 180);
+//    val3 = map(val3, 0, 1023, 0, 180);
+//    val4 = map(val4, 0, 1023, 0, 180);
+//    Serial.print("gia tri truoc: ");
+//    Serial.println(val3_);
+//    Serial.print("Gia tri sau: ");
+//    Serial.println(val3);
+//  }
+//  writeSV();
+//  return val3, val3_;
+//}
+//
+//void writeSV()
+//{
+//  if(val3 < val3_)
+//  {
+//    for( ; val3 < val3_; val3++)
+//    {
+//      sv3.write(val3);
+//      Serial.println(val3);
+//      delay(10);
+//    }
+//  }
+//  else if(val3 > val3_)
+//  {
+//    for( ;val3 > val3_; val3--)
+//    {
+//      sv3.write(val3);
+//      Serial.println(val3);
+//      delay(10);
+//    }
+//  }
+//}
+
+//void controlSV()
+//{
+//  enable_rc
+//  val1 = analogRead(DK_sv1);
+//  val1 = map(val1, 0, 1023, 0, 180);
+//  sv1.write(val1);
+//
+//  val2 = analogRead(DK_sv2);
+//  val2 = map(val2, 0, 1023, 0, 180);
+//  sv2.write(val2);
+//
+//  val3 = analogRead(DK_sv3);
+//  val3 = map(val3, 0, 1023, 0, 180);
+//  sv3.write(val3);
+//
+//  val4 = analogRead(DK_sv4);
+//  val4 = map(val4, 0, 1023, 0, 180);
+//  sv4.write(val4);
+//
+//  return val1, val2, val3, val4;
+//}
