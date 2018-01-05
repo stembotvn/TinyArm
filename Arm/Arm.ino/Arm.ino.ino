@@ -39,12 +39,12 @@ Servo sv4;
 #define speaker_on  digitalWrite(speaker,HIGH);
 #define speaker_off digitalWrite(speaker,LOW);
 
-int button1;
+bool button1;
 int button2;
 int button3;
-int button1_ = 1;
-int button2_;
-int button3_;
+bool button1_ = 1;
+int button2_= button2;
+int button3_= button3;
 int val1;
 int val2;
 int val3;
@@ -53,21 +53,12 @@ int lastval1 = val1;
 int lastval2 = val2;
 int lastval3 = val3;
 int lastval4 = val4;
-int n;
-int i;
 int count = 0;
-int location1[4];
-int location2[4];
-int location3[4];
-int location4[4];
-
-void setup()
-{
-  Serial.begin(9600);
-  disable_rc
-  ARM_int();
-}
-
+int location1[5];
+int location2[5];
+int location3[5];
+int location4[5];
+///////////////////
 void ARM_int()
 {
   disable_rc
@@ -87,14 +78,7 @@ void ARM_int()
   pinMode(led3, OUTPUT);
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
-  pinMode(BT1, INPUT);
-  pinMode(BT2, INPUT);
-  pinMode(BT3, INPUT);
-  pinMode(Pot1, INPUT);
-  pinMode(Pot2, INPUT);
-  pinMode(Pot3, INPUT);
-  pinMode(Pot4, INPUT);
-
+  pinMode(BT1, INPUT_PULLUP);
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
@@ -104,7 +88,7 @@ void ARM_int()
 
 void bip(int n,int time_)
 {
-  for(int i=0;i<=n;i++)
+  for(int i=0;i<n;i++)
   {
     speaker_on   
     delay(time_);
@@ -114,7 +98,7 @@ void bip(int n,int time_)
 }
 void nhay(int n,int time_)
 {
-  for(int i=0;i<=n;i++)
+  for(int i=0;i<n;i++)
   {
     led1_on led2_on led3_on led4_on led5_on   
     delay(time_);
@@ -131,7 +115,7 @@ void led_off()
   led5_off 
 }
 
-int readPot()                          // Read value of manual speed knob
+void readPot()                          // Read value of manual speed knob
 {                        
      
   val1 = analogRead(Pot1);           // reads the value of the potentiometer (value between 0 and 1023)
@@ -142,7 +126,7 @@ int readPot()                          // Read value of manual speed knob
   val2 = map(val2, 0, 1023, 0, 179);
   val3 = map(val3, 0, 1023, 0, 179);
   val4 = map(val4, 0, 1023, 0, 179);
-  return val1, val2, val3, val4;
+//  return val1, val2, val3, val4;
 }
 void setPosition(int pos1, int pos2, int pos3, int pos4)    // Set the servo position
 {            
@@ -177,7 +161,83 @@ void controlSV()
     lastval4 = val4;
   }
 }
-
+void writeSV()
+{
+  for(int i = 0; i < 4; i++)
+    {
+      if(location1[i] < location1[i+1])
+      {
+        for(int j = location1[i]; j <= location1[i+1]; j++)
+        {
+          sv1.write(j);
+          delay(20);
+        }
+      }
+      else if(location1[i] > location1[i+1])
+      {
+        for(int j = location1[i]; j >= location1[i+1]; j--)
+        {
+          sv1.write(j);
+          delay(20);
+        }
+      }
+      
+      ////////////////  2  ////////////////
+      if(location2[i] < location2[i+1])
+      {
+        for(int j = location2[i]; j <= location2[i+1]; j++)
+        {
+          sv2.write(j);
+          delay(20);
+        }
+      }
+      else if(location2[i] > location2[i+1])
+      {
+        for(int j = location2[i]; j >= location2[i+1]; j--)
+        {
+          sv2.write(j);
+          delay(20);
+        }
+      }
+      
+      ///////////////  3  /////////////////
+      if(location3[i] < location3[i+1])
+      {
+        for(int j = location3[i]; j <= location3[i+1]; j++)
+        {
+          sv3.write(j);
+          delay(20);
+        }
+      }
+      else if(location3[i] > location3[i+1])
+      {
+        for(int j = location3[i]; j >= location3[i+1]; j--)
+        {
+          sv3.write(j);
+          delay(20);
+        }
+      }
+      
+      ////////////////  4  /////////////////////
+      if(location4[i] < location4[i+1])
+      {
+        for(int j = location4[i]; j <= location4[i+1]; j++)
+        {
+          sv4.write(j);
+          delay(20);
+        }
+      }
+      else if(location4[i] > location4[i+1])
+      {
+        for(int j = location4[i]; j >= location4[i+1]; j--)
+        {
+          sv4.write(j);
+          delay(20);
+        }
+      }
+      
+    }
+}
 
 void play()
 {
@@ -185,16 +245,21 @@ void play()
   button2 = analogRead(BT2);
   button3 = analogRead(BT3);
   controlSV();
-  Serial.println(count);
+  
   if(button1 != button1_)
   {
     if(button1 == LOW)
     {
-      bip(2,100);
+      bip(1,100);
       count++;
+      Serial.print("Pressed ");  Serial.println(count);
+
     }
+   else Serial.println("Release ");
+    button1_ = button1;
   }
-  button1 = button1_;
+ 
+  
   switch(count) //record location servo
   {
     case 1:
@@ -225,13 +290,14 @@ void play()
       location4[3] = val4;
       led3_on
       break;
-    case 5:
+      case 5:
       location1[4] = val1;
       location2[4] = val2;
       location3[4] = val3;
       location4[4] = val4;
       led4_on
       break;
+
     case 6:
       led5_on
       break;
@@ -239,7 +305,7 @@ void play()
       nhay(3,200);
       led_off();
       count = 0;
-      for(i=0;i<=4;i++)
+      for(int i=0;i<=4;i++)
       {
         location1[i] = val1;
         location2[i] = val2;
@@ -247,29 +313,21 @@ void play()
         location4[i] = val4;
       }
       break;
+  
   }
 
-  if(button2 < 100) // Write location servo
+
+if(button2 < 100)
   {
     bip(3,150);
-    for(i=0;i<=4;i++)
-    {
-      sv1.write(location1[i]);
-      delay(1000);
-      sv2.write(location2[i]);
-      delay(1000);
-      sv3.write(location3[i]);
-      delay(1000);
-      sv4.write(location4[i]);
-      delay(1000);
-    }
+    writeSV();
   }
   if(button3 < 100)  //Reset location
   {
     nhay(3,200);
     led_off();
     count = 0;
-    for(i=0;i<=4;i++)
+    for(int i=0;i<=4;i++)
       {
         location1[i] = val1;
         location2[i] = val2;
@@ -279,10 +337,16 @@ void play()
   }
 }
 
+
+///////////////////
+void setup()
+{
+  Serial.begin(9600);
+  disable_rc
+  ARM_int();
+}
+
 void loop()
 {
   play();
-  //controlSV();
-  //writeSV();
 }
-
