@@ -24,8 +24,8 @@ Servo sv4;
 #define BT2 A7
 #define BT3 A6
 
-#define enable_rc digitalWrite(PowSV, HIGH);
-#define disable_rc digitalWrite(PowSV, LOW);
+#define enable_rc   digitalWrite(PowSV, HIGH);
+#define disable_rc  digitalWrite(PowSV, LOW);
 #define led1_on     digitalWrite(led1,LOW);
 #define led1_off    digitalWrite(led1,HIGH);
 #define led2_on     digitalWrite(led2,LOW);
@@ -54,10 +54,10 @@ int lastval2 = val2;
 int lastval3 = val3;
 int lastval4 = val4;
 int count = 0;
-int location1[5];
-int location2[5];
-int location3[5];
-int location4[5];
+int Position1[5];
+int Position2[5];
+int Position3[5];
+int Position4[5];
 ///////////////////
 void ARM_int()
 {
@@ -125,8 +125,7 @@ void readPot()                          // Read value of manual speed knob
   val1 = map(val1, 0, 1023, 0, 179);  // scale it to use it with the servo (value between 0 and 180)
   val2 = map(val2, 0, 1023, 0, 179);
   val3 = map(val3, 0, 1023, 0, 179);
-  val4 = map(val4, 0, 1023, 0, 179);
-//  return val1, val2, val3, val4;
+  val4 = map(val4, 0, 1023, 5, 120);
 }
 void setPosition(int pos1, int pos2, int pos3, int pos4)    // Set the servo position
 {            
@@ -161,85 +160,86 @@ void controlSV()
     lastval4 = val4;
   }
 }
-void writeSV()
+void controlSpeed(int t)                                          //Servo speed control
 {
+  enable_rc
   for(int i = 0; i < 4; i++)
     {
-      if(location1[i] < location1[i+1])
+      if(Position1[i] < Position1[i+1])
       {
-        for(int j = location1[i]; j <= location1[i+1]; j++)
+        for(int j = Position1[i]; j <= Position1[i+1]; j++)
         {
           sv1.write(j);
-          delay(20);
+          delay(t);
         }
       }
-      else if(location1[i] > location1[i+1])
+      else if(Position1[i] > Position1[i+1])
       {
-        for(int j = location1[i]; j >= location1[i+1]; j--)
+        for(int j = Position1[i]; j >= Position1[i+1]; j--)
         {
           sv1.write(j);
-          delay(20);
+          delay(t);
         }
       }
       
       ////////////////  2  ////////////////
-      if(location2[i] < location2[i+1])
+      if(Position2[i] < Position2[i+1])
       {
-        for(int j = location2[i]; j <= location2[i+1]; j++)
+        for(int j = Position2[i]; j <= Position2[i+1]; j++)
         {
           sv2.write(j);
-          delay(20);
+          delay(t);
         }
       }
-      else if(location2[i] > location2[i+1])
+      else if(Position2[i] > Position2[i+1])
       {
-        for(int j = location2[i]; j >= location2[i+1]; j--)
+        for(int j = Position2[i]; j >= Position2[i+1]; j--)
         {
           sv2.write(j);
-          delay(20);
+          delay(t);
         }
       }
       
       ///////////////  3  /////////////////
-      if(location3[i] < location3[i+1])
+      if(Position3[i] < Position3[i+1])
       {
-        for(int j = location3[i]; j <= location3[i+1]; j++)
+        for(int j = Position3[i]; j <= Position3[i+1]; j++)
         {
           sv3.write(j);
-          delay(20);
+          delay(t);
         }
       }
-      else if(location3[i] > location3[i+1])
+      else if(Position3[i] > Position3[i+1])
       {
-        for(int j = location3[i]; j >= location3[i+1]; j--)
+        for(int j = Position3[i]; j >= Position3[i+1]; j--)
         {
           sv3.write(j);
-          delay(20);
+          delay(t);
         }
       }
       
       ////////////////  4  /////////////////////
-      if(location4[i] < location4[i+1])
+      if(Position4[i] < Position4[i+1])
       {
-        for(int j = location4[i]; j <= location4[i+1]; j++)
+        for(int j = Position4[i]; j <= Position4[i+1]; j++)
         {
           sv4.write(j);
-          delay(20);
+          delay(t);
         }
       }
-      else if(location4[i] > location4[i+1])
+      else if(Position4[i] > Position4[i+1])
       {
-        for(int j = location4[i]; j >= location4[i+1]; j--)
+        for(int j = Position4[i]; j >= Position4[i+1]; j--)
         {
           sv4.write(j);
-          delay(20);
+          delay(t);
         }
       }
       
     }
 }
 
-void play()
+void start()
 {
   button1 = digitalRead(BT1);
   button2 = analogRead(BT2);
@@ -250,51 +250,49 @@ void play()
   {
     if(button1 == LOW)
     {
-      bip(1,100);
+      bip(1,200);
       count++;
       Serial.print("Pressed ");  Serial.println(count);
 
     }
-   else Serial.println("Release ");
+    else Serial.println("Release ");
     button1_ = button1;
   }
  
-  
-  switch(count) //record location servo
+  switch(count) //record position servo
   {
     case 1:
-      location1[0] = val1;
-      location2[0] = val2;
-      location3[0] = val3;
-      location4[0] = val4;
-      //led1_on
+      Position1[0] = val1;
+      Position2[0] = val2;
+      Position3[0] = val3;
+      Position4[0] = val4;
       break;
     case 2:
-      location1[1] = val1;
-      location2[1] = val2;
-      location3[1] = val3;
-      location4[1] = val4;
+      Position1[1] = val1;
+      Position2[1] = val2;
+      Position3[1] = val3;
+      Position4[1] = val4;
       led1_on
       break;
     case 3:
-      location1[2] = val1;
-      location2[2] = val2;
-      location3[2] = val3;
-      location4[2] = val4;
+      Position1[2] = val1;
+      Position2[2] = val2;
+      Position3[2] = val3;
+      Position4[2] = val4;
       led2_on
       break;
     case 4:
-      location1[3] = val1;
-      location2[3] = val2;
-      location3[3] = val3;
-      location4[3] = val4;
+      Position1[3] = val1;
+      Position2[3] = val2;
+      Position3[3] = val3;
+      Position4[3] = val4;
       led3_on
       break;
       case 5:
-      location1[4] = val1;
-      location2[4] = val2;
-      location3[4] = val3;
-      location4[4] = val4;
+      Position1[4] = val1;
+      Position2[4] = val2;
+      Position3[4] = val3;
+      Position4[4] = val4;
       led4_on
       break;
 
@@ -307,34 +305,34 @@ void play()
       count = 0;
       for(int i=0;i<=4;i++)
       {
-        location1[i] = val1;
-        location2[i] = val2;
-        location3[i] = val3;
-        location4[i] = val4;
+        Position1[i] = val1;
+        Position2[i] = val2;
+        Position3[i] = val3;
+        Position4[i] = val4;
       }
       break;
   
   }
 
 
-if(button2 < 100)
+  if(button2 < 100)
   {
     bip(3,150);
-    writeSV();
+    controlSpeed(20);
   }
-  if(button3 < 100)  //Reset location
-  {
-    nhay(3,200);
-    led_off();
-    count = 0;
-    for(int i=0;i<=4;i++)
-      {
-        location1[i] = val1;
-        location2[i] = val2;
-        location3[i] = val3;
-        location4[i] = val4;
-      }
-  }
+//  if(button3 < 100)  //Reset Position
+//  {
+//    nhay(3,200);
+//    led_off();
+//    count = 0;
+//    for(int i=0;i<=4;i++)
+//    {
+//      Position1[i] = val1;
+//      Position2[i] = val2;
+//      Position3[i] = val3;
+//      Position4[i] = val4;
+//    }
+//  }
 }
 
 
@@ -348,5 +346,5 @@ void setup()
 
 void loop()
 {
-  play();
+  start();
 }
