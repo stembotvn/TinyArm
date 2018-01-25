@@ -10,22 +10,21 @@ Servo sv4;
 #define pin_sv3 9
 #define pin_sv4 10
 
-#define Pot1 A2
-#define Pot2 A3
+#define Pot1 A6
+#define Pot2 A7
 #define Pot3 A0
 #define Pot4 A1
 #define speaker 2
-#define led1 13
+#define led1 4
 #define led2 3
-#define led3 4
+#define led3 7
 #define led4 8
-#define led5 7
-#define BT1 12
-#define BT2 A7
-#define BT3 A6
+#define led5 12
+#define BT1 A2
+#define BT2 A3
 
-#define enable_rc   digitalWrite(PowSV, HIGH);
-#define disable_rc  digitalWrite(PowSV, LOW);
+#define enable_rc   digitalWrite(PowSV, LOW);
+#define disable_rc  digitalWrite(PowSV, HIGH);
 #define led1_on     digitalWrite(led1,LOW);
 #define led1_off    digitalWrite(led1,HIGH);
 #define led2_on     digitalWrite(led2,LOW);
@@ -40,11 +39,9 @@ Servo sv4;
 #define speaker_off digitalWrite(speaker,LOW);
 
 bool button1;
-int button2;
-int button3;
+bool button2;
 bool button1_ = 1;
-int button2_= button2;
-int button3_= button3;
+bool button2_= button2;
 int val1;
 int val2;
 int val3;
@@ -54,13 +51,14 @@ int lastval2 = val2;
 int lastval3 = val3;
 int lastval4 = val4;
 int count = 0;
-int Position1[5];
-int Position2[5];
-int Position3[5];
-int Position4[5];
+int Position1[5] = {90, 90, 90, 90, 90};
+int Position2[5] = {90, 90, 90, 90, 90};
+int Position3[5] = {90, 90, 90, 90, 90};
+int Position4[5] = {90, 90, 90, 90, 90};
 ///////////////////
 void ARM_int()
 {
+  pinMode(PowSV, OUTPUT);
   disable_rc
   sv1.attach(pin_sv1);
   sv2.attach(pin_sv2);
@@ -71,14 +69,14 @@ void ARM_int()
   sv3.write(90);
   sv4.write(90);
 
-  pinMode(PowSV, OUTPUT);
+
   pinMode(speaker, OUTPUT);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
-  pinMode(BT1, INPUT_PULLUP);
+  //pinMode(BT1, INPUT_PULLUP);
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
@@ -117,7 +115,7 @@ void led_off()
 
 void readPot()                          // Read value of manual speed knob
 {                        
-     
+  enable_rc   
   val1 = analogRead(Pot1);           // reads the value of the potentiometer (value between 0 and 1023)
   val2 = analogRead(Pot2);
   val3 = analogRead(Pot3);
@@ -235,15 +233,15 @@ void controlSpeed(int t)                                          //Servo speed 
           delay(t);
         }
       }
-      
     }
+    bip(1,500);
 }
 
 void start()
 {
+  enable_rc
   button1 = digitalRead(BT1);
-  button2 = analogRead(BT2);
-  button3 = analogRead(BT3);
+  button2 = digitalRead(BT2);
   controlSV();
   
   if(button1 != button1_)
@@ -295,7 +293,6 @@ void start()
       Position4[4] = val4;
       led4_on
       break;
-
     case 6:
       led5_on
       break;
@@ -311,28 +308,13 @@ void start()
         Position4[i] = val4;
       }
       break;
-  
   }
 
-
-  if(button2 < 100)
+  if(button2 == LOW)
   {
     bip(3,150);
     controlSpeed(20);
   }
-//  if(button3 < 100)  //Reset Position
-//  {
-//    nhay(3,200);
-//    led_off();
-//    count = 0;
-//    for(int i=0;i<=4;i++)
-//    {
-//      Position1[i] = val1;
-//      Position2[i] = val2;
-//      Position3[i] = val3;
-//      Position4[i] = val4;
-//    }
-//  }
 }
 
 
