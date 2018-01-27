@@ -23,21 +23,6 @@ Servo sv4;
 #define BT1 A2
 #define BT2 A3
 
-#define enable_rc   digitalWrite(PowSV, LOW);
-#define disable_rc  digitalWrite(PowSV, HIGH);
-#define led1_on     digitalWrite(led1,LOW);
-#define led1_off    digitalWrite(led1,HIGH);
-#define led2_on     digitalWrite(led2,LOW);
-#define led2_off    digitalWrite(led2,HIGH);
-#define led3_on     digitalWrite(led3,LOW);
-#define led3_off    digitalWrite(led3,HIGH);
-#define led4_on     digitalWrite(led4,LOW);
-#define led4_off    digitalWrite(led4,HIGH);
-#define led5_on     digitalWrite(led5,LOW);
-#define led5_off    digitalWrite(led5,HIGH);
-#define speaker_on  digitalWrite(speaker,HIGH);
-#define speaker_off digitalWrite(speaker,LOW);
-
 bool button1;
 bool button2;
 bool button1_ = 1;
@@ -56,10 +41,18 @@ int Position2[5] = {90, 90, 90, 90, 90};
 int Position3[5] = {90, 90, 90, 90, 90};
 int Position4[5] = {90, 90, 90, 90, 90};
 ///////////////////
+void enable_rc()
+{
+  digitalWrite(PowSV, LOW);
+}
+void disable_rc()
+{
+  digitalWrite(PowSV,HIGH);
+}
 void ARM_int()
 {
   pinMode(PowSV, OUTPUT);
-  disable_rc
+  disable_rc();
   sv1.attach(pin_sv1);
   sv2.attach(pin_sv2);
   sv3.attach(pin_sv3);
@@ -88,9 +81,9 @@ void bip(int n,int time_)
 {
   for(int i=0;i<n;i++)
   {
-    speaker_on   
+    digitalWrite(speaker,HIGH);   
     delay(time_);
-    speaker_off
+    digitalWrite(speaker,LOW);
     delay(time_);
   }
 }
@@ -98,24 +91,32 @@ void nhay(int n,int time_)
 {
   for(int i=0;i<n;i++)
   {
-    led1_on led2_on led3_on led4_on led5_on   
+    digitalWrite(led1,LOW);
+    digitalWrite(led2,LOW);
+    digitalWrite(led3,LOW);
+    digitalWrite(led4,LOW);
+    digitalWrite(led5,LOW);  
     delay(time_);
-    led1_off led2_off led3_off led4_off led5_off 
+    digitalWrite(led1,HIGH);
+    digitalWrite(led2,HIGH);
+    digitalWrite(led3,HIGH);
+    digitalWrite(led4,HIGH);
+    digitalWrite(led5,HIGH);
     delay(time_);
   }
 }
 void led_off()
 {
-  led1_off 
-  led2_off 
-  led3_off 
-  led4_off 
-  led5_off 
+  digitalWrite(led1,HIGH);
+  digitalWrite(led2,HIGH);
+  digitalWrite(led3,HIGH);
+  digitalWrite(led4,HIGH);
+  digitalWrite(led5,HIGH);
 }
 
 void readPot()                          // Read value of manual speed knob
 {                        
-  enable_rc   
+  enable_rc();  
   val1 = analogRead(Pot1);           // reads the value of the potentiometer (value between 0 and 1023)
   val2 = analogRead(Pot2);
   val3 = analogRead(Pot3);
@@ -133,9 +134,9 @@ void setPosition(int pos1, int pos2, int pos3, int pos4)    // Set the servo pos
   sv4.write(pos4);
   delay(20);                                                // waits for the servo to get there 
 }
-void controlSV()
+void checkValue()
 {
-  enable_rc
+  enable_rc();
   readPot();
   if(val1 != lastval1)                                      // If the value has changed then update the servo
   {
@@ -160,13 +161,14 @@ void controlSV()
 }
 /////////////////
 
-bool servoControl (int thePos, Servo theServo, int theSpeed ){     //Function Form: outputType FunctionName (inputType localInputName)
+bool servoControl (int thePos,int startPos, Servo theServo )    //Function Form: outputType FunctionName (inputType localInputName)
+{     
     //This function moves a servo a certain number of steps toward a desired position and returns whether or not it is near or hase recahed that position
     // thePos - the desired position
     // thServo - the address pin of the servo that we want to move
     // theSpeed - the delay between steps of the servo
     
-    int startPos = theServo.read();       //read the current position of the servo we are working with.
+    //int startPos = theServo.read();       //read the current position of the servo we are working with.
     int newPos = startPos;                // newPos holds the position of the servo as it moves
     
     //define where the pos is with respect to the command
@@ -174,7 +176,7 @@ bool servoControl (int thePos, Servo theServo, int theSpeed ){     //Function Fo
     if (startPos < thePos){
        newPos = newPos + 1;               
        theServo.write(newPos);
-       delay(theSpeed);
+    //   delay(theSpeed);
        return 0;                          // Tell primary program that servo has not reached its position     
     }
 
@@ -182,38 +184,45 @@ bool servoControl (int thePos, Servo theServo, int theSpeed ){     //Function Fo
     else if (newPos > thePos){
       newPos = newPos - 1;
       theServo.write(newPos);
-      delay(theSpeed);
+   //   delay(theSpeed);
       return 0;  
     }  
 
     // If the servo is +-5 within the desired range then tell the main program that the servo has reached the desired position.
-    else {
+    else 
+    {
         return 1;
     }  
-   
-} //e
 }
-void ParallelControl(int t)                                          //Servo speed control
+void ParallelControl(int t,int count)                                          //Servo speed control
 {
-  enable_rc
+  enable_rc();
   bool done = 0;
-  bool status1 =0;
-  for (int i=0;i<4;i++)
+  bool status1 = 0 ;
+  bool status2 = 0;
+  bool status3 = 0;
+  bool status4 = 0;
+  for (int i=0;i<count;i++)
   {
-  while (!done)
-  {
-    status1 = servoControl(
-  }
- 
-    bip(1,500);
-}
+    while (!done)
+    {
+      status1 = servoControl(Position1[i],Position1[i+1], sv1);
+      status2 = servoControl(Position2[i],Position2[i+1], sv2);
+      status3 = servoControl(Position3[i],Position3[i+1], sv3);
+      status4 = servoControl(Position4[i],Position4[i+1], sv4);
 
+      if (status1 == 1 & status2 == 1 & status3 == 1 & status4 == 1) done = 1;
+      delay(t);
+    }
+  }
+  bip(1,500);
+}
 void start()
 {
-  enable_rc
+  enable_rc();
   button1 = digitalRead(BT1);
   button2 = digitalRead(BT2);
-  controlSV();
+  checkValue();
   
   if(button1 != button1_)
   {
@@ -241,31 +250,31 @@ void start()
       Position2[1] = val2;
       Position3[1] = val3;
       Position4[1] = val4;
-      led1_on
+      digitalWrite(led1,LOW);
       break;
     case 3:
       Position1[2] = val1;
       Position2[2] = val2;
       Position3[2] = val3;
       Position4[2] = val4;
-      led2_on
+      digitalWrite(led2,LOW);
       break;
     case 4:
       Position1[3] = val1;
       Position2[3] = val2;
       Position3[3] = val3;
       Position4[3] = val4;
-      led3_on
+      digitalWrite(led3,LOW);
       break;
       case 5:
       Position1[4] = val1;
       Position2[4] = val2;
       Position3[4] = val3;
       Position4[4] = val4;
-      led4_on
+      digitalWrite(led4,LOW);
       break;
     case 6:
-      led5_on
+      digitalWrite(led5,LOW);
       break;
     case 7:
       nhay(3,200);
@@ -284,7 +293,7 @@ void start()
   if(button2 == LOW)
   {
     bip(3,150);
-    controlSpeed(20);
+    ParallelControl(20, count);
   }
 }
 
@@ -293,7 +302,7 @@ void start()
 void setup()
 {
   Serial.begin(9600);
-  disable_rc
+  disable_rc();
   ARM_int();
 }
 
