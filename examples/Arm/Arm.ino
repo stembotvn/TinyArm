@@ -158,82 +158,53 @@ void controlSV()
     lastval4 = val4;
   }
 }
-void controlServo(int t)                                          //Servo speed control
+/////////////////
+
+bool servoControl (int thePos, Servo theServo, int theSpeed ){     //Function Form: outputType FunctionName (inputType localInputName)
+    //This function moves a servo a certain number of steps toward a desired position and returns whether or not it is near or hase recahed that position
+    // thePos - the desired position
+    // thServo - the address pin of the servo that we want to move
+    // theSpeed - the delay between steps of the servo
+    
+    int startPos = theServo.read();       //read the current position of the servo we are working with.
+    int newPos = startPos;                // newPos holds the position of the servo as it moves
+    
+    //define where the pos is with respect to the command
+    // if the current position is less that the desired move the position up
+    if (startPos < thePos){
+       newPos = newPos + 1;               
+       theServo.write(newPos);
+       delay(theSpeed);
+       return 0;                          // Tell primary program that servo has not reached its position     
+    }
+
+    // Else if the current position is greater than the desired move the servo down
+    else if (newPos > thePos){
+      newPos = newPos - 1;
+      theServo.write(newPos);
+      delay(theSpeed);
+      return 0;  
+    }  
+
+    // If the servo is +-5 within the desired range then tell the main program that the servo has reached the desired position.
+    else {
+        return 1;
+    }  
+   
+} //e
+}
+void ParallelControl(int t)                                          //Servo speed control
 {
   enable_rc
-  for(int i = 0; i < 4; i++)
-    {
-      if(Position1[i] < Position1[i+1])
-      {
-        for(int j = Position1[i]; j <= Position1[i+1]; j++)
-        {
-          sv1.write(j);
-          delay(t);
-        }
-      }
-      else if(Position1[i] > Position1[i+1])
-      {
-        for(int j = Position1[i]; j >= Position1[i+1]; j--)
-        {
-          sv1.write(j);
-          delay(t);
-        }
-      }
-      
-      ////////////////  2  ////////////////
-      if(Position2[i] < Position2[i+1])
-      {
-        for(int j = Position2[i]; j <= Position2[i+1]; j++)
-        {
-          sv2.write(j);
-          delay(t);
-        }
-      }
-      else if(Position2[i] > Position2[i+1])
-      {
-        for(int j = Position2[i]; j >= Position2[i+1]; j--)
-        {
-          sv2.write(j);
-          delay(t);
-        }
-      }
-      
-      ///////////////  3  /////////////////
-      if(Position3[i] < Position3[i+1])
-      {
-        for(int j = Position3[i]; j <= Position3[i+1]; j++)
-        {
-          sv3.write(j);
-          delay(t);
-        }
-      }
-      else if(Position3[i] > Position3[i+1])
-      {
-        for(int j = Position3[i]; j >= Position3[i+1]; j--)
-        {
-          sv3.write(j);
-          delay(t);
-        }
-      }
-      
-      ////////////////  4  /////////////////////
-      if(Position4[i] < Position4[i+1])
-      {
-        for(int j = Position4[i]; j <= Position4[i+1]; j++)
-        {
-          sv4.write(j);
-          delay(t);
-        }
-      }
-      else if(Position4[i] > Position4[i+1])
-      {
-        for(int j = Position4[i]; j >= Position4[i+1]; j--)
-        {
-          sv4.write(j);
-          delay(t);
-        }
-      }
-    }
+  bool done = 0;
+  bool status1 =0;
+  for (int i=0;i<4;i++)
+  {
+  while (!done)
+  {
+    status1 = servoControl(
+  }
+ 
     bip(1,500);
 }
 
