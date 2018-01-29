@@ -161,14 +161,14 @@ void checkValue()
 }
 /////////////////
 
-bool servoControl (int thePos,int startPos, Servo theServo )    //Function Form: outputType FunctionName (inputType localInputName)
+bool servoControl (int thePos, Servo theServo )    //Function Form: outputType FunctionName (inputType localInputName)
 {     
     //This function moves a servo a certain number of steps toward a desired position and returns whether or not it is near or hase recahed that position
     // thePos - the desired position
     // thServo - the address pin of the servo that we want to move
     // theSpeed - the delay between steps of the servo
     
-    //int startPos = theServo.read();       //read the current position of the servo we are working with.
+    int startPos = theServo.read();       //read the current position of the servo we are working with.
     int newPos = startPos;                // newPos holds the position of the servo as it moves
     
     //define where the pos is with respect to the command
@@ -194,7 +194,7 @@ bool servoControl (int thePos,int startPos, Servo theServo )    //Function Form:
         return 1;
     }  
 }
-void ParallelControl(int t,int count)                                          //Servo speed control
+void ParallelControl(int t,int steps)                                          //Servo speed control
 {
   enable_rc();
   bool done = 0;
@@ -202,18 +202,27 @@ void ParallelControl(int t,int count)                                          /
   bool status2 = 0;
   bool status3 = 0;
   bool status4 = 0;
-  for (int i=0;i<count;i++)
+  for (int i=0;i<steps;i++)
   {
+    Serial.println(String("i = ")+ i);
+    Serial.println(String("steps = ")+ steps);
     while (!done)
     {
-      status1 = servoControl(Position1[i],Position1[i+1], sv1);
-      status2 = servoControl(Position2[i],Position2[i+1], sv2);
-      status3 = servoControl(Position3[i],Position3[i+1], sv3);
-      status4 = servoControl(Position4[i],Position4[i+1], sv4);
-
-      if (status1 == 1 & status2 == 1 & status3 == 1 & status4 == 1) done = 1;
+      status1 = servoControl(Position1[i], sv1);
+      status2 = servoControl(Position2[i], sv2);
+      status3 = servoControl(Position3[i], sv3);
+      //status4 = servoControl(Position4[i], sv4);
+      if ((status1 == 1) && (status2 == 1) && (status3 == 1)) done = 1;
       delay(t);
     }
+    done = 0;
+    while(!done)
+    {
+      status4 = servoControl(Position4[i], sv4);
+      if (status4 == 1) done = 1;
+      delay(t);
+    }
+    done = 0;
   }
   bip(1,500);
 }
@@ -231,7 +240,6 @@ void start()
       bip(1,200);
       count++;
       Serial.print("Pressed ");  Serial.println(count);
-
     }
     else Serial.println("Release ");
     button1_ = button1;
@@ -293,7 +301,7 @@ void start()
   if(button2 == LOW)
   {
     bip(3,150);
-    ParallelControl(20, count);
+    ParallelControl(20, count-1); // steps = (count - 1)
   }
 }
 
