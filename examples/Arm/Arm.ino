@@ -69,7 +69,6 @@ void ARM_int()
   pinMode(led3, OUTPUT);
   pinMode(led4, OUTPUT);
   pinMode(led5, OUTPUT);
-  //pinMode(BT1, INPUT_PULLUP);
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
@@ -173,22 +172,22 @@ bool servoControl (int thePos, Servo theServo )    //Function Form: outputType F
     
     //define where the pos is with respect to the command
     // if the current position is less that the desired move the position up
-    if (startPos < thePos){
+    if (startPos < thePos)
+    {
        newPos = newPos + 1;               
        theServo.write(newPos);
-    //   delay(theSpeed);
        return 0;                          // Tell primary program that servo has not reached its position     
     }
 
     // Else if the current position is greater than the desired move the servo down
-    else if (newPos > thePos){
+    else if (newPos > thePos)
+    {
       newPos = newPos - 1;
       theServo.write(newPos);
-   //   delay(theSpeed);
       return 0;  
     }  
 
-    // If the servo is +-5 within the desired range then tell the main program that the servo has reached the desired position.
+    // If the servo is the desired range then tell the main program that the servo has reached the desired position.
     else 
     {
         return 1;
@@ -211,7 +210,6 @@ void ParallelControl(int t,int steps)                                          /
       status1 = servoControl(Position1[i], sv1);
       status2 = servoControl(Position2[i], sv2);
       status3 = servoControl(Position3[i], sv3);
-      //status4 = servoControl(Position4[i], sv4);
       if ((status1 == 1) && (status2 == 1) && (status3 == 1)) done = 1;
       delay(t);
     }
