@@ -23,10 +23,10 @@ Servo sv4;
 #define BT1 A2
 #define BT2 A3
 
-bool button1;
-bool button2;
 bool button1_ = 1;
 bool button2_= button2;
+bool button1;
+bool button2;
 int val1;
 int val2;
 int val3;
@@ -49,20 +49,38 @@ void disable_rc()
 {
   digitalWrite(PowSV,HIGH);
 }
-void ARM_int()
+void begins()
 {
-  pinMode(PowSV, OUTPUT);
-  disable_rc();
+  readPot();
+  enable_rc();
+  bool done = 0;
+  bool status1 = 0 ;
+  bool status2 = 0;
+  bool status3 = 0;
+  bool status4 = 0;
+  while (!done)
+  { 
+    status1 = servoControl(val1, sv1);
+    status2 = servoControl(val2, sv2);
+    status3 = servoControl(val3, sv3);
+    status4 = servoControl(val4, sv4);
+    if ((status1 == 1) && (status2 == 1) && (status3 == 1) && (status4 == 1)) done = 1;
+    delay(50);
+  }
+}
+void ARM_init()
+{
+ 
   sv1.attach(pin_sv1);
   sv2.attach(pin_sv2);
   sv3.attach(pin_sv3);
   sv4.attach(pin_sv4);
-  sv1.write(90);
-  sv2.write(90);
-  sv3.write(90);
-  sv4.write(90);
+//  sv1.write(90);
+//  sv2.write(90);
+//  sv3.write(90);
+//  sv4.write(90);
 
-
+  pinMode(PowSV, OUTPUT);
   pinMode(speaker, OUTPUT);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
@@ -309,7 +327,9 @@ void setup()
 {
   Serial.begin(9600);
   disable_rc();
-  ARM_int();
+  ARM_init();
+  begins();
+  bip(5,50);
 }
 
 void loop()
