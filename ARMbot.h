@@ -50,7 +50,13 @@ public:
 	bool servoControl(int thePos, Servo _theServo);
 	void ParallelControl(int t, int steps);
 	void start();
-
+	/////function for Scratch programming
+	void setBase(int pos,int speed);
+	void setShoulder(int pos, int speed);
+	void setElbow(int pos, int speed);
+	void setGrip(int pos, int speed);
+	void moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed);//move parallel servo to target
+	
 private:
 	Servo _sv1;
 	Servo _sv2;

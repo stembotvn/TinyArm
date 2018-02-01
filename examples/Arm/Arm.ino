@@ -23,10 +23,10 @@ Servo sv4;
 #define BT1 A2
 #define BT2 A3
 
-bool button1_ = 1;
-bool button2_= button2;
 bool button1;
 bool button2;
+bool button1_ = 1;
+bool button2_= button2;
 int val1;
 int val2;
 int val3;
