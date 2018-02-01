@@ -1,5 +1,5 @@
 /*
-Class for Stembot platform 
+Class for Stembot platform
 an open source STEM robotics for kids
 http://stembot.vn
 */
@@ -40,10 +40,12 @@ public:
 	void init();
 	void enable_rc();
 	void disable_rc();
-	void begins();
+	void begin();
 	void bip(int n, int time_);
 	void blinks(int n, int time_);
 	void led_off();
+	void led_on();
+	void setLed(bool l1, bool l2, bool l3, bool l4, bool l5);
 	void readPot();
 	void setPosition(int pos1, int pos2, int pos3, int pos4);
 	void checkValue();
@@ -56,7 +58,8 @@ public:
 	void setElbow(int pos, int speed);
 	void setGrip(int pos, int speed);
 	void moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed);//move parallel servo to target
-	
+	void readButton();
+
 private:
 	Servo _sv1;
 	Servo _sv2;

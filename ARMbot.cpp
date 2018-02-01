@@ -33,7 +33,7 @@ void ARMbot::disable_rc()
 {
 	digitalWrite(PowSV, HIGH);
 }
-void ARMbot::begins()
+void ARMbot::begin()
 {
 	readPot();
   enable_rc();
@@ -43,7 +43,7 @@ void ARMbot::begins()
   bool status3 = 0;
   bool status4 = 0;
   while (!done)
-  { 
+  {
     status1 = servoControl(_val1, _sv1);
     status2 = servoControl(_val2, _sv2);
     status3 = servoControl(_val3, _sv3);
@@ -57,7 +57,7 @@ void ARMbot::bip(int n, int time_)
 {
 	for(int i=0;i<n;i++)
   {
-    digitalWrite(speaker,HIGH);   
+    digitalWrite(speaker,HIGH);
     delay(time_);
     digitalWrite(speaker,LOW);
     delay(time_);
@@ -71,7 +71,7 @@ void ARMbot::blinks(int n, int time_)
     digitalWrite(led2,LOW);
     digitalWrite(led3,LOW);
     digitalWrite(led4,LOW);
-    digitalWrite(led5,LOW);  
+    digitalWrite(led5,LOW);
     delay(time_);
     digitalWrite(led1,HIGH);
     digitalWrite(led2,HIGH);
@@ -89,10 +89,31 @@ void ARMbot::led_off()
   digitalWrite(led4,HIGH);
   digitalWrite(led5,HIGH);
 }
+void ARMbot::led_on()
+{
+  digitalWrite(led1,LOW);
+  digitalWrite(led2,LOW);
+  digitalWrite(led3,LOW);
+  digitalWrite(led4,LOW);
+  digitalWrite(led5,LOW);
+}
+void ARMbot::setLed(bool l1, bool l2, bool l3, bool l4, bool l5) // led off = 1, led on = 0;
+{
+  digitalWrite(led1,l1);
+  digitalWrite(led2,l2);
+  digitalWrite(led3,l3);
+  digitalWrite(led4,l4);
+  digitalWrite(led5,l5);
+}
+void ARMbot::readButton()
+{
+  _button1 = digitalRead(BT1);
+  _button2 = digitalRead(BT2);
+}
 void ARMbot::readPot()
 {
 	// Read value of manual speed knob
-	enable_rc();  
+	enable_rc();
   _val1 = analogRead(Pot1);             // reads the value of the potentiometer (value between 0 and 1023)
   _val2 = analogRead(Pot2);
   _val3 = analogRead(Pot3);
@@ -105,11 +126,11 @@ void ARMbot::readPot()
 void ARMbot::setPosition(int pos1, int pos2, int pos3, int pos4)
 {
 	// Set the servo position
-	_sv1.write(pos1);             // Write the position to the servo                                                
+	_sv1.write(pos1);             // Write the position to the servo
   _sv2.write(pos2);
   _sv3.write(pos3);
   _sv4.write(pos4);
-  delay(20); 
+  delay(20);
 }
 void ARMbot::checkValue()
 {
@@ -143,17 +164,17 @@ bool ARMbot::servoControl(int thePos, Servo theServo)
   // thePos - the desired position
   // thServo - the address pin of the servo that we want to move
   // theSpeed - the delay between steps of the servo
-    
+
   int startPos = theServo.read();       //read the current position of the servo we are working with.
   int newPos = startPos;                // newPos holds the position of the servo as it moves
-    
+
   //define where the pos is with respect to the command
   // if the current position is less that the desired move the position up
   if (startPos < thePos)
   {
-    newPos = newPos + 1;               
+    newPos = newPos + 1;
     theServo.write(newPos);
-    return 0;                          // Tell primary program that servo has not reached its position     
+    return 0;                          // Tell primary program that servo has not reached its position
   }
 
   // Else if the current position is greater than the desired move the servo down
@@ -161,18 +182,18 @@ bool ARMbot::servoControl(int thePos, Servo theServo)
   {
     newPos = newPos - 1;
     theServo.write(newPos);
-    return 0;  
-  }  
+    return 0;
+  }
 
   // If the servo is the desired range then tell the main program that the servo has reached the desired position.
-  else 
+  else
   {
     return 1;
-  }  
+  }
 }
 void ARMbot::ParallelControl(int t, int steps)
 {
-	enable_rc();
+  enable_rc();
   bool done = 0;
   bool status1 = 0 ;
   bool status2 = 0;
@@ -203,11 +224,10 @@ void ARMbot::ParallelControl(int t, int steps)
 }
 void ARMbot::start()
 {
-	enable_rc();
-  _button1 = digitalRead(BT1);
-  _button2 = digitalRead(BT2);
+  enable_rc();
+  readButton();
   checkValue();
-  
+
   if(_button1 != _button1_)
   {
     if(_button1 == LOW)
@@ -219,7 +239,7 @@ void ARMbot::start()
     else Serial.println("Release ");
     _button1_ = _button1;
   }
- 
+
   switch(_count) //record position servo
   {
     case 1:
@@ -286,9 +306,9 @@ void ARMbot::setBase(int pos,int speed)
   int newPos = startPos;                // newPos holds the position of the servo as it moves
   if (startPos < pos)
   {
-    newPos = newPos + 1;               
+    newPos = newPos + 1;
     _sv1.write(newPos);                         // Tell primary program that servo has not reached its position
-    delay(speed);     
+    delay(speed);
   }
 
   // Else if the current position is greater than the desired move the servo down
@@ -297,7 +317,7 @@ void ARMbot::setBase(int pos,int speed)
     newPos = newPos - 1;
     _sv1.write(newPos);
     delay(speed);
-  }  
+  }
 }
 void ARMbot::setShoulder(int pos,int speed)
 {
@@ -305,9 +325,9 @@ void ARMbot::setShoulder(int pos,int speed)
   int newPos = startPos;                // newPos holds the position of the servo as it moves
   if (startPos < pos)
   {
-    newPos = newPos + 1;               
+    newPos = newPos + 1;
     _sv2.write(newPos);                         // Tell primary program that servo has not reached its position
-     delay(speed);     
+     delay(speed);
   }
 
   // Else if the current position is greater than the desired move the servo down
@@ -316,7 +336,7 @@ void ARMbot::setShoulder(int pos,int speed)
     newPos = newPos - 1;
     _sv2.write(newPos);
     delay(speed);
-  }  
+  }
 }
 void ARMbot::setElbow(int pos,int speed)
 {
@@ -324,9 +344,9 @@ void ARMbot::setElbow(int pos,int speed)
   int newPos = startPos;                // newPos holds the position of the servo as it moves
   if (startPos < pos)
   {
-    newPos = newPos + 1;               
+    newPos = newPos + 1;
     _sv3.write(newPos);                         // Tell primary program that servo has not reached its position
-    delay(speed);     
+    delay(speed);
   }
 
   // Else if the current position is greater than the desired move the servo down
@@ -335,7 +355,7 @@ void ARMbot::setElbow(int pos,int speed)
     newPos = newPos - 1;
     _sv3.write(newPos);
     delay(speed);
-  }  
+  }
 }
 void ARMbot::setGrip(int pos,int speed)
 {
@@ -343,9 +363,9 @@ void ARMbot::setGrip(int pos,int speed)
   int newPos = startPos;                // newPos holds the position of the servo as it moves
   if (startPos < pos)
   {
-    newPos = newPos + 1;               
+    newPos = newPos + 1;
     _sv4.write(newPos);                         // Tell primary program that servo has not reached its position
-    delay(speed);     
+    delay(speed);
   }
 
   // Else if the current position is greater than the desired move the servo down
@@ -354,7 +374,7 @@ void ARMbot::setGrip(int pos,int speed)
     newPos = newPos - 1;
     _sv4.write(newPos);
     delay(speed);
-  }  
+  }
 }
 void ARMbot::moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed)//move parallel servo to target
 {
