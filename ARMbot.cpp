@@ -105,10 +105,17 @@ void ARMbot::setLed(bool l1, bool l2, bool l3, bool l4, bool l5) // led off = 1,
   digitalWrite(led4,l4);
   digitalWrite(led5,l5);
 }
-void ARMbot::readButton()
+bool ARMbot::readButton1()
 {
   _button1 = digitalRead(BT1);
+  if(_button1 == LOW) return 0;
+  else return 1;
+}
+bool ARMbot::readButton2()
+{
   _button2 = digitalRead(BT2);
+  if(_button2 == LOW) return 0;
+  else return 1;
 }
 void ARMbot::readPot()
 {
@@ -201,8 +208,8 @@ void ARMbot::ParallelControl(int t, int steps)
   bool status4 = 0;
   for (int i=0;i<steps;i++)
   {
-    Serial.println(String("i = ")+ i);
-    Serial.println(String("steps = ")+ steps);
+    //Serial.println(String("i = ")+ i);
+    //Serial.println(String("steps = ")+ steps);
     while (!done)
     {
       status1 = servoControl(_Position1[i], _sv1);
@@ -225,7 +232,8 @@ void ARMbot::ParallelControl(int t, int steps)
 void ARMbot::start()
 {
   enable_rc();
-  readButton();
+  _button1 = digitalRead(BT1);
+  _button2 = digitalRead(BT2);
   checkValue();
 
   if(_button1 != _button1_)
@@ -234,9 +242,9 @@ void ARMbot::start()
     {
       bip(1,200);
       _count++;
-      Serial.print("Pressed ");  Serial.println(_count);
+      //Serial.print("Pressed ");  Serial.println(_count);
     }
-    else Serial.println("Release ");
+    //else Serial.println("Release ");
     _button1_ = _button1;
   }
 
@@ -302,79 +310,59 @@ void ARMbot::start()
 
 void ARMbot::setBase(int pos,int speed)
 {
-  int startPos = _sv1.read();       //read the current position of the servo we are working with.
-  int newPos = startPos;                // newPos holds the position of the servo as it moves
-  if (startPos < pos)
+  enable_rc();
+  bool done = 0;
+  bool status1 = 0 ;
+  while (!done)
   {
-    newPos = newPos + 1;
-    _sv1.write(newPos);                         // Tell primary program that servo has not reached its position
+    status1 = servoControl(pos, _sv1);
+    if (status1 == 1) done = 1;
     delay(speed);
   }
-
-  // Else if the current position is greater than the desired move the servo down
-  else if (newPos > pos)
-  {
-    newPos = newPos - 1;
-    _sv1.write(newPos);
-    delay(speed);
-  }
+  done = 0;
+  bip(1,500);
 }
 void ARMbot::setShoulder(int pos,int speed)
 {
-  int startPos = _sv2.read();       //read the current position of the servo we are working with.
-  int newPos = startPos;                // newPos holds the position of the servo as it moves
-  if (startPos < pos)
+  enable_rc();
+  bool done = 0;
+  bool status1 = 0 ;
+  while (!done)
   {
-    newPos = newPos + 1;
-    _sv2.write(newPos);                         // Tell primary program that servo has not reached its position
-     delay(speed);
-  }
-
-  // Else if the current position is greater than the desired move the servo down
-  else if (newPos > pos)
-  {
-    newPos = newPos - 1;
-    _sv2.write(newPos);
+    status1 = servoControl(pos, _sv2);
+    if (status1 == 1) done = 1;
     delay(speed);
   }
+  done = 0;
+  bip(1,500);
 }
 void ARMbot::setElbow(int pos,int speed)
 {
-  int startPos = _sv3.read();       //read the current position of the servo we are working with.
-  int newPos = startPos;                // newPos holds the position of the servo as it moves
-  if (startPos < pos)
+  enable_rc();
+  bool done = 0;
+  bool status1 = 0 ;
+  while (!done)
   {
-    newPos = newPos + 1;
-    _sv3.write(newPos);                         // Tell primary program that servo has not reached its position
+    status1 = servoControl(pos, _sv3);
+    if (status1 == 1) done = 1;
     delay(speed);
   }
-
-  // Else if the current position is greater than the desired move the servo down
-  else if (newPos > pos)
-  {
-    newPos = newPos - 1;
-    _sv3.write(newPos);
-    delay(speed);
-  }
+  done = 0;
+  bip(1,500);
 }
 void ARMbot::setGrip(int pos,int speed)
 {
-  int startPos = _sv4.read();       //read the current position of the servo we are working with.
-  int newPos = startPos;                // newPos holds the position of the servo as it moves
-  if (startPos < pos)
+  enable_rc();
+  bool done = 0;
+  bool status1 = 0 ;
+  while (!done)
   {
-    newPos = newPos + 1;
-    _sv4.write(newPos);                         // Tell primary program that servo has not reached its position
+    status1 = servoControl(pos, _sv4);
+    if (status1 == 1) done = 1;
     delay(speed);
   }
-
-  // Else if the current position is greater than the desired move the servo down
-  else if (newPos > pos)
-  {
-    newPos = newPos - 1;
-    _sv4.write(newPos);
-    delay(speed);
-  }
+  done = 0;
+  bip(1,500);
 }
 void ARMbot::moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed)//move parallel servo to target
 {

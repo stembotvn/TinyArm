@@ -58,7 +58,8 @@ public:
 	void setElbow(int pos, int speed);
 	void setGrip(int pos, int speed);
 	void moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed);//move parallel servo to target
-	void readButton();
+	bool readButton1();
+  bool readButton2();
 
 private:
 	Servo _sv1;
