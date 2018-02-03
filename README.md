@@ -3,3 +3,4 @@ Easy Robot Arm develope by STEMbot.vn to help Children from 5+ years old can eas
 
 # Scratch 2.0 Programming
 Tiny Arm can be program in Scratch 2.0 language, suitable for students from 10+ years old. 
+Installing TinyArm Extension in mBLock V3 Software. 
