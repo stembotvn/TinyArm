@@ -227,7 +227,6 @@ void ARMbot::ParallelControl(int t, int steps)
     }
     	done = 0;
   }
-  bip(1,500);
 }
 void ARMbot::start()
 {
@@ -305,6 +304,7 @@ void ARMbot::start()
   {
     bip(3,150);
     ParallelControl(20, _count-1); // steps = (_count - 1)
+    bip(1,500);
   }
 }
 
@@ -320,7 +320,6 @@ void ARMbot::setBase(int pos,int speed)
     delay(speed);
   }
   done = 0;
-  bip(1,500);
 }
 void ARMbot::setShoulder(int pos,int speed)
 {
@@ -334,7 +333,6 @@ void ARMbot::setShoulder(int pos,int speed)
     delay(speed);
   }
   done = 0;
-  bip(1,500);
 }
 void ARMbot::setElbow(int pos,int speed)
 {
@@ -348,7 +346,6 @@ void ARMbot::setElbow(int pos,int speed)
     delay(speed);
   }
   done = 0;
-  bip(1,500);
 }
 void ARMbot::setGrip(int pos,int speed)
 {
@@ -362,7 +359,6 @@ void ARMbot::setGrip(int pos,int speed)
     delay(speed);
   }
   done = 0;
-  bip(1,500);
 }
 void ARMbot::moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed)//move parallel servo to target
 {
