@@ -59,7 +59,7 @@ public:
 	void setGrip(int pos, int speed);
 	void moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed);//move parallel servo to target
 	bool readButton1();
-  bool readButton2();
+  	bool readButton2();
 
 private:
 	Servo _sv1;
@@ -80,10 +80,7 @@ private:
 	int _lastval3 = _val3;
 	int _lastval4 = _val4;
 	int _count = 0;
-	int _Position1[5] = {90, 90, 90, 90, 90};
-	int _Position2[5] = {90, 90, 90, 90, 90};
-	int _Position3[5] = {90, 90, 90, 90, 90};
-	int _Position4[5] = {90, 90, 90, 90, 90};
+	int _Position[4][25];
 };
 
 #endif

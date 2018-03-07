@@ -212,16 +212,16 @@ void ARMbot::ParallelControl(int t, int steps)
     //Serial.println(String("steps = ")+ steps);
     while (!done)
     {
-      status1 = servoControl(_Position1[i], _sv1);
-      status2 = servoControl(_Position2[i], _sv2);
-      status3 = servoControl(_Position3[i], _sv3);
+      status1 = servoControl(_Position[0][i], _sv1);
+      status2 = servoControl(_Position[1][i], _sv2);
+      status3 = servoControl(_Position[2][i], _sv3);
       if ((status1 == 1) && (status2 == 1) && (status3 == 1)) done = 1;
       delay(t);
     }
     done = 0;
     while(!done)
     {
-      status4 = servoControl(_Position4[i], _sv4);
+      status4 = servoControl(_Position[3][i], _sv4);
       if (status4 == 1) done = 1;
       delay(t);
     }
@@ -231,81 +231,39 @@ void ARMbot::ParallelControl(int t, int steps)
 void ARMbot::start()
 {
   enable_rc();
-  _button1 = digitalRead(BT1);
-  _button2 = digitalRead(BT2);
-  checkValue();
-
-  if(_button1 != _button1_)
+  
+  for(int i=0;i<25;i++)
   {
-    if(_button1 == LOW)
+    _Position[0][i] = 90;
+    _Position[1][i] = 90;
+    _Position[2][i] = 90;
+    _Position[3][i] = 90;
+  }
+  while(_count <= 25)
+  {
+    checkValue();
+    if(readButton1() == LOW)
     {
       bip(1,200);
+      Serial.print("Pressed ");  Serial.println(_count);
+      _Position[0][_count] = _val1;
+      _Position[1][_count] = _val2;
+      _Position[2][_count] = _val3;
+      _Position[3][_count] = _val4;
       _count++;
-      //Serial.print("Pressed ");  Serial.println(_count);
     }
-    //else Serial.println("Release ");
-    _button1_ = _button1;
+    
+    if(readButton2() == LOW)
+    {
+        bip(3,150);
+        ParallelControl(20, _count);
+        bip(1,500);
+    }
   }
+  _count = 0;
+  blinks(3,200);
+  led_off();
 
-  switch(_count) //record position servo
-  {
-    case 1:
-      _Position1[0] = _val1;
-      _Position2[0] = _val2;
-      _Position3[0] = _val3;
-      _Position4[0] = _val4;
-      break;
-    case 2:
-      _Position1[1] = _val1;
-      _Position2[1] = _val2;
-      _Position3[1] = _val3;
-      _Position4[1] = _val4;
-      digitalWrite(led1,LOW);
-      break;
-    case 3:
-      _Position1[2] = _val1;
-      _Position2[2] = _val2;
-      _Position3[2] = _val3;
-      _Position4[2] = _val4;
-      digitalWrite(led2,LOW);
-      break;
-    case 4:
-      _Position1[3] = _val1;
-      _Position2[3] = _val2;
-      _Position3[3] = _val3;
-      _Position4[3] = _val4;
-      digitalWrite(led3,LOW);
-      break;
-    case 5:
-      _Position1[4] = _val1;
-      _Position2[4] = _val2;
-      _Position3[4] = _val3;
-      _Position4[4] = _val4;
-      digitalWrite(led4,LOW);
-      break;
-    case 6:
-      digitalWrite(led5,LOW);
-      break;
-    case 7:
-      blinks(3,200);
-      led_off();
-      _count = 0;
-      for(int i=0;i<=4;i++)
-      {
-        _Position1[i] = _val1;
-        _Position2[i] = _val2;
-        _Position3[i] = _val3;
-        _Position4[i] = _val4;
-      }
-      break;
-  }
-
-  if(_button2 == LOW)
-  {
-    bip(3,150);
-    ParallelControl(20, _count-1); // steps = (_count - 1)
-    bip(1,500);
-  }
 }
 
 void ARMbot::setBase(int pos,int speed)
