@@ -166,7 +166,6 @@ void ARMbot::checkValue()
 }
 bool ARMbot::servoControl(int thePos, Servo theServo)
 {
-	//Function Form: outputType FunctionName (inputType localInputName)
 	//This function moves a servo a certain number of steps toward a desired position and returns whether or not it is near or hase recahed that position
   // thePos - the desired position
   // thServo - the address pin of the servo that we want to move
@@ -239,7 +238,7 @@ void ARMbot::start()
     _Position[2][i] = 90;
     _Position[3][i] = 90;
   }
-  while(_count <= 25)
+  while(_count < 25)
   {
     checkValue();
     if(readButton1() == LOW)
@@ -250,7 +249,7 @@ void ARMbot::start()
       _Position[1][_count] = _val2;
       _Position[2][_count] = _val3;
       _Position[3][_count] = _val4;
-      _count++;
+      _count++; 
     }
     
     if(readButton2() == LOW)
@@ -258,6 +257,8 @@ void ARMbot::start()
         bip(3,150);
         ParallelControl(20, _count);
         bip(1,500);
+        _count = 0;
+        blinks(3,200);
     }
   }
   _count = 0;
@@ -320,9 +321,9 @@ void ARMbot::setGrip(int pos,int speed)
 }
 void ARMbot::moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed)//move parallel servo to target
 {
-  _Position1[0] = Base_pos;
-  _Position2[0] = Shoulder_pos;
-  _Position3[0] = Elbow_pos;
-  _Position4[0] = Grip_pos;
+  _Position[0][0] = Base_pos;
+  _Position[0][0] = Shoulder_pos;
+  _Position[0][0] = Elbow_pos;
+  _Position[0][0] = Grip_pos;
   ParallelControl(speed, 1);
 }
