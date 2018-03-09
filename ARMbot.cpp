@@ -230,7 +230,7 @@ void ARMbot::ParallelControl(int t, int steps)
 void ARMbot::start()
 {
   enable_rc();
-  
+  bool k = 0;
   for(int i=0;i<25;i++)
   {
     _Position[0][i] = 90;
@@ -243,6 +243,11 @@ void ARMbot::start()
     checkValue();
     if(readButton1() == LOW)
     {
+      if(k==1) 
+      {  
+        _count = 0;
+        k = 0;
+      }
       bip(1,200);
       Serial.print("Pressed ");  Serial.println(_count);
       _Position[0][_count] = _val1;
@@ -257,8 +262,7 @@ void ARMbot::start()
         bip(3,150);
         ParallelControl(20, _count);
         bip(1,500);
-        _count = 0;
-        blinks(3,200);
+        k = 1;
     }
   }
   _count = 0;

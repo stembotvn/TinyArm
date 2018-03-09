@@ -60,7 +60,6 @@ public:
 	void moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed);//move parallel servo to target
 	bool readButton1();
   	bool readButton2();
-
 private:
 	Servo _sv1;
 	Servo _sv2;
