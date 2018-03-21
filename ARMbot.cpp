@@ -128,7 +128,7 @@ void ARMbot::readPot()
   _val1 = map(_val1, 0, 1023, 0, 179);  // scale it to use it with the servo (value between 0 and 180)
   _val2 = map(_val2, 0, 1023, 0, 179);
   _val3 = map(_val3, 0, 1023, 0, 179);
-  _val4 = map(_val4, 0, 1023, 5, 120);
+  _val4 = map(_val4, 0, 1023, 120, 160);
 }
 void ARMbot::setPosition(int pos1, int pos2, int pos3, int pos4)
 {
@@ -238,7 +238,7 @@ void ARMbot::start()
     _Position[2][i] = 90;
     _Position[3][i] = 90;
   }
-  while(_count < 25)
+  while(_count < 100)
   {
     checkValue();
     if(readButton1() == LOW)

@@ -79,7 +79,7 @@ private:
 	int _lastval3 = _val3;
 	int _lastval4 = _val4;
 	int _count = 0;
-	int _Position[4][25];
+	byte _Position[4][100];
 };
 
 #endif
