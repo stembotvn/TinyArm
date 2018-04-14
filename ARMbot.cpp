@@ -125,8 +125,8 @@ void ARMbot::readPot()
   _val2 = analogRead(Pot2);
   _val3 = analogRead(Pot3);
   _val4 = analogRead(Pot4);
-  _val1 = map(_val1, 0, 1023, 0, 179);  // scale it to use it with the servo (value between 0 and 180)
-  _val2 = map(_val2, 0, 1023, 0, 179);
+  _val1 = map(_val1, 0, 1023, 179, 0);  // scale it to use it with the servo (value between 0 and 180)
+  _val2 = map(_val2, 0, 1023, 179, 0);
   _val3 = map(_val3, 0, 1023, 197, 0);
   _val4 = map(_val4, 0, 1023, 120, 160);
 }
