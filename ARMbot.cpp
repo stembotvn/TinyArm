@@ -12,18 +12,18 @@ void ARMbot::init()
   _sv3.attach(pin_sv3);
   _sv4.attach(pin_sv4);
 
+  pinMode(BT1, INPUT);
+  pinMode(BT2, INPUT);
+  pinMode(BT3, INPUT);
+
   pinMode(PowSV, OUTPUT);
   pinMode(speaker, OUTPUT);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
-  pinMode(led4, OUTPUT);
-  pinMode(led5, OUTPUT);
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
- 	digitalWrite(led4, HIGH);
-  digitalWrite(led5, HIGH);
 }
 void ARMbot::enable_rc()
 {
@@ -70,14 +70,10 @@ void ARMbot::blinks(int n, int time_)
     digitalWrite(led1,LOW);
     digitalWrite(led2,LOW);
     digitalWrite(led3,LOW);
-    digitalWrite(led4,LOW);
-    digitalWrite(led5,LOW);
     delay(time_);
     digitalWrite(led1,HIGH);
     digitalWrite(led2,HIGH);
     digitalWrite(led3,HIGH);
-    digitalWrite(led4,HIGH);
-    digitalWrite(led5,HIGH);
     delay(time_);
   }
 }
@@ -86,24 +82,18 @@ void ARMbot::led_off()
 	digitalWrite(led1,HIGH);
   digitalWrite(led2,HIGH);
   digitalWrite(led3,HIGH);
-  digitalWrite(led4,HIGH);
-  digitalWrite(led5,HIGH);
 }
 void ARMbot::led_on()
 {
   digitalWrite(led1,LOW);
   digitalWrite(led2,LOW);
   digitalWrite(led3,LOW);
-  digitalWrite(led4,LOW);
-  digitalWrite(led5,LOW);
 }
-void ARMbot::setLed(bool l1, bool l2, bool l3, bool l4, bool l5) // led off = 1, led on = 0;
+void ARMbot::setLed(bool l1, bool l2, bool l3) // led off = 1, led on = 0;
 {
   digitalWrite(led1,l1);
   digitalWrite(led2,l2);
   digitalWrite(led3,l3);
-  digitalWrite(led4,l4);
-  digitalWrite(led5,l5);
 }
 bool ARMbot::readButton1()
 {
@@ -115,6 +105,12 @@ bool ARMbot::readButton2()
 {
   _button2 = digitalRead(BT2);
   if(_button2 == LOW) return 0;
+  else return 1;
+}
+bool ARMbot::readButton3()
+{
+  _button3 = digitalRead(BT3);
+  if(_button3 == LOW) return 0;
   else return 1;
 }
 void ARMbot::readPot()
@@ -231,7 +227,7 @@ void ARMbot::start()
 {
   enable_rc();
   bool k = 0;
-  for(int i=0;i<25;i++)
+  for(int i=0;i<50;i++)
   {
     _Position[0][i] = 90;
     _Position[1][i] = 90;
@@ -243,6 +239,7 @@ void ARMbot::start()
     checkValue();
     if(readButton1() == LOW)
     {
+      setLed(0,1,1);
       if(k==1) 
       {  
         _count = 0;
@@ -259,10 +256,25 @@ void ARMbot::start()
     
     if(readButton2() == LOW)
     {
+        setLed(1,0,1);
         bip(3,150);
         ParallelControl(20, _count);
         bip(1,500);
         k = 1;
+        setLed(1,1,1);
+    }
+    if(readButton3() == LOW)
+    {
+      setLed(1,1,0);
+      bip(1,1000);
+      for(int i=0;i<50;i++)
+      {   
+        _Position[0][i] = 90;
+        _Position[1][i] = 90;
+        _Position[2][i] = 90;
+        _Position[3][i] = 90;
+      }
+      setLed(1,1,1);
     }
   }
   _count = 0;
