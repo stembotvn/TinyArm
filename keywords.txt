@@ -18,3 +18,4 @@ setElbow	KEYWORD2
 setGrip	KEYWORD2
 moveArm	KEYWORD2
 readButton	KEYWORD2
+ParallelControl	KEYWORD2

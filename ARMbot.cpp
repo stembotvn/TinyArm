@@ -12,18 +12,18 @@ void ARMbot::init()
   _sv3.attach(pin_sv3);
   _sv4.attach(pin_sv4);
 
+  pinMode(BT1, INPUT);
+  pinMode(BT2, INPUT);
+  pinMode(BT3, INPUT);
+
   pinMode(PowSV, OUTPUT);
   pinMode(speaker, OUTPUT);
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
-  pinMode(led4, OUTPUT);
-  pinMode(led5, OUTPUT);
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
- 	digitalWrite(led4, HIGH);
-  digitalWrite(led5, HIGH);
 }
 void ARMbot::enable_rc()
 {
@@ -51,7 +51,7 @@ void ARMbot::begin()
     if ((status1 == 1) && (status2 == 1) && (status3 == 1) && (status4 == 1)) done = 1;
     delay(50);
   }
-  bip(5,50);
+  tick(5,1000,50);
 }
 void ARMbot::bip(int n, int time_)
 {
@@ -63,6 +63,27 @@ void ARMbot::bip(int n, int time_)
     delay(time_);
   }
 }
+void ARMbot::tone(uint16_t frequency, uint32_t duration)
+{
+  int period = 1000000L / frequency;
+  int pulse = period / 2;
+  for (long i = 0; i < duration * 1000L; i += period)
+  {
+    digitalWrite(speaker, HIGH);
+    delayMicroseconds(pulse);
+    digitalWrite(speaker, LOW);
+    delayMicroseconds(pulse);
+  }
+}
+void ARMbot::tick(int n, uint16_t frequency, int times)
+{
+  for(int i=0; i<n; i++)
+  {
+    tone(frequency, times);
+    digitalWrite(speaker, LOW);
+    delay(times);
+  }
+}
 void ARMbot::blinks(int n, int time_)
 {
 	for(int i=0;i<n;i++)
@@ -70,14 +91,10 @@ void ARMbot::blinks(int n, int time_)
     digitalWrite(led1,LOW);
     digitalWrite(led2,LOW);
     digitalWrite(led3,LOW);
-    digitalWrite(led4,LOW);
-    digitalWrite(led5,LOW);
     delay(time_);
     digitalWrite(led1,HIGH);
     digitalWrite(led2,HIGH);
     digitalWrite(led3,HIGH);
-    digitalWrite(led4,HIGH);
-    digitalWrite(led5,HIGH);
     delay(time_);
   }
 }
@@ -86,24 +103,18 @@ void ARMbot::led_off()
 	digitalWrite(led1,HIGH);
   digitalWrite(led2,HIGH);
   digitalWrite(led3,HIGH);
-  digitalWrite(led4,HIGH);
-  digitalWrite(led5,HIGH);
 }
 void ARMbot::led_on()
 {
   digitalWrite(led1,LOW);
   digitalWrite(led2,LOW);
   digitalWrite(led3,LOW);
-  digitalWrite(led4,LOW);
-  digitalWrite(led5,LOW);
 }
-void ARMbot::setLed(bool l1, bool l2, bool l3, bool l4, bool l5) // led off = 1, led on = 0;
+void ARMbot::setLed(bool l1, bool l2, bool l3) // led off = 1, led on = 0;
 {
   digitalWrite(led1,l1);
   digitalWrite(led2,l2);
   digitalWrite(led3,l3);
-  digitalWrite(led4,l4);
-  digitalWrite(led5,l5);
 }
 bool ARMbot::readButton1()
 {
@@ -117,6 +128,12 @@ bool ARMbot::readButton2()
   if(_button2 == LOW) return 0;
   else return 1;
 }
+bool ARMbot::readButton3()
+{
+  _button3 = digitalRead(BT3);
+  if(_button3 == LOW) return 0;
+  else return 1;
+}
 void ARMbot::readPot()
 {
 	// Read value of manual speed knob
@@ -125,10 +142,10 @@ void ARMbot::readPot()
   _val2 = analogRead(Pot2);
   _val3 = analogRead(Pot3);
   _val4 = analogRead(Pot4);
-  _val1 = map(_val1, 0, 1023, 0, 179);  // scale it to use it with the servo (value between 0 and 180)
-  _val2 = map(_val2, 0, 1023, 0, 179);
-  _val3 = map(_val3, 0, 1023, 0, 179);
-  _val4 = map(_val4, 0, 1023, 5, 120);
+  _val1 = map(_val1, 0, 1023, 179, 0);  // scale it to use it with the servo (value between 0 and 180)
+  _val2 = map(_val2, 0, 1023, 179, 0);
+  _val3 = map(_val3, 0, 1023, 197, 0);
+  _val4 = map(_val4, 0, 1023, 120, 160);
 }
 void ARMbot::setPosition(int pos1, int pos2, int pos3, int pos4)
 {
@@ -166,7 +183,6 @@ void ARMbot::checkValue()
 }
 bool ARMbot::servoControl(int thePos, Servo theServo)
 {
-	//Function Form: outputType FunctionName (inputType localInputName)
 	//This function moves a servo a certain number of steps toward a desired position and returns whether or not it is near or hase recahed that position
   // thePos - the desired position
   // thServo - the address pin of the servo that we want to move
@@ -212,16 +228,16 @@ void ARMbot::ParallelControl(int t, int steps)
     //Serial.println(String("steps = ")+ steps);
     while (!done)
     {
-      status1 = servoControl(_Position1[i], _sv1);
-      status2 = servoControl(_Position2[i], _sv2);
-      status3 = servoControl(_Position3[i], _sv3);
+      status1 = servoControl(_Position[0][i], _sv1);
+      status2 = servoControl(_Position[1][i], _sv2);
+      status3 = servoControl(_Position[2][i], _sv3);
       if ((status1 == 1) && (status2 == 1) && (status3 == 1)) done = 1;
       delay(t);
     }
     done = 0;
     while(!done)
     {
-      status4 = servoControl(_Position4[i], _sv4);
+      status4 = servoControl(_Position[3][i], _sv4);
       if (status4 == 1) done = 1;
       delay(t);
     }
@@ -231,81 +247,61 @@ void ARMbot::ParallelControl(int t, int steps)
 void ARMbot::start()
 {
   enable_rc();
-  _button1 = digitalRead(BT1);
-  _button2 = digitalRead(BT2);
-  checkValue();
-
-  if(_button1 != _button1_)
+  bool k = 0;
+  for(int i=0;i<50;i++)
   {
-    if(_button1 == LOW)
+    _Position[0][i] = 90;
+    _Position[1][i] = 90;
+    _Position[2][i] = 90;
+    _Position[3][i] = 90;
+  }
+  while(_count < 100)
+  {
+    checkValue();
+    if(readButton1() == LOW)
     {
-      bip(1,200);
-      _count++;
-      //Serial.print("Pressed ");  Serial.println(_count);
-    }
-    //else Serial.println("Release ");
-    _button1_ = _button1;
-  }
-
-  switch(_count) //record position servo
-  {
-    case 1:
-      _Position1[0] = _val1;
-      _Position2[0] = _val2;
-      _Position3[0] = _val3;
-      _Position4[0] = _val4;
-      break;
-    case 2:
-      _Position1[1] = _val1;
-      _Position2[1] = _val2;
-      _Position3[1] = _val3;
-      _Position4[1] = _val4;
-      digitalWrite(led1,LOW);
-      break;
-    case 3:
-      _Position1[2] = _val1;
-      _Position2[2] = _val2;
-      _Position3[2] = _val3;
-      _Position4[2] = _val4;
-      digitalWrite(led2,LOW);
-      break;
-    case 4:
-      _Position1[3] = _val1;
-      _Position2[3] = _val2;
-      _Position3[3] = _val3;
-      _Position4[3] = _val4;
-      digitalWrite(led3,LOW);
-      break;
-    case 5:
-      _Position1[4] = _val1;
-      _Position2[4] = _val2;
-      _Position3[4] = _val3;
-      _Position4[4] = _val4;
-      digitalWrite(led4,LOW);
-      break;
-    case 6:
-      digitalWrite(led5,LOW);
-      break;
-    case 7:
-      blinks(3,200);
-      led_off();
-      _count = 0;
-      for(int i=0;i<=4;i++)
-      {
-        _Position1[i] = _val1;
-        _Position2[i] = _val2;
-        _Position3[i] = _val3;
-        _Position4[i] = _val4;
+      setLed(0,1,1);
+      if(k==1) 
+      {  
+        _count = 0;
+        k = 0;
       }
-      break;
+      tick(1,1000,200);
+      Serial.print("Pressed ");  Serial.println(_count);
+      _Position[0][_count] = _val1;
+      _Position[1][_count] = _val2;
+      _Position[2][_count] = _val3;
+      _Position[3][_count] = _val4;
+      _count++; 
+    }
+    
+    if(readButton2() == LOW)
+    {
+        setLed(1,0,1);
+        tick(3,1000,150);
+        ParallelControl(20, _count);
+        tick(1,1000,500);
+        k = 1;
+        setLed(1,1,1);
+    }
+    if(readButton3() == LOW)
+    {
+      setLed(1,1,0);
+      tick(1,1000,1000);
+      for(int i=0;i<50;i++)
+      {   
+        _Position[0][i] = _val1;
+        _Position[1][i] = _val2;
+        _Position[2][i] = _val3;
+        _Position[3][i] = _val4;
+      }
+      setLed(1,1,1);
+    }
   }
+  _count = 0;
+  blinks(3,200);
+  led_off();
 
-  if(_button2 == LOW)
-  {
-    bip(3,150);
-    ParallelControl(20, _count-1); // steps = (_count - 1)
-    bip(1,500);
-  }
 }
 
 void ARMbot::setBase(int pos,int speed)
@@ -362,9 +358,9 @@ void ARMbot::setGrip(int pos,int speed)
 }
 void ARMbot::moveArm(int Base_pos,int Shoulder_pos,int Elbow_pos,int Grip_pos,int speed)//move parallel servo to target
 {
-  _Position1[0] = Base_pos;
-  _Position2[0] = Shoulder_pos;
-  _Position3[0] = Elbow_pos;
-  _Position4[0] = Grip_pos;
+  _Position[0][0] = Base_pos;
+  _Position[0][0] = Shoulder_pos;
+  _Position[0][0] = Elbow_pos;
+  _Position[0][0] = Grip_pos;
   ParallelControl(speed, 1);
 }
