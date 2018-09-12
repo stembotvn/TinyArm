@@ -51,7 +51,7 @@ void ARMbot::begin()
     if ((status1 == 1) && (status2 == 1) && (status3 == 1) && (status4 == 1)) done = 1;
     delay(50);
   }
-  bip(5,50);
+  tick(5,1000,50);
 }
 void ARMbot::bip(int n, int time_)
 {
@@ -61,6 +61,27 @@ void ARMbot::bip(int n, int time_)
     delay(time_);
     digitalWrite(speaker,LOW);
     delay(time_);
+  }
+}
+void ARMbot::tone(uint16_t frequency, uint32_t duration)
+{
+  int period = 1000000L / frequency;
+  int pulse = period / 2;
+  for (long i = 0; i < duration * 1000L; i += period)
+  {
+    digitalWrite(speaker, HIGH);
+    delayMicroseconds(pulse);
+    digitalWrite(speaker, LOW);
+    delayMicroseconds(pulse);
+  }
+}
+void ARMbot::tick(int n, uint16_t frequency, int times)
+{
+  for(int i=0; i<n; i++)
+  {
+    tone(frequency, times);
+    digitalWrite(speaker, LOW);
+    delay(times);
   }
 }
 void ARMbot::blinks(int n, int time_)
@@ -245,7 +266,7 @@ void ARMbot::start()
         _count = 0;
         k = 0;
       }
-      bip(1,200);
+      tick(1,1000,200);
       Serial.print("Pressed ");  Serial.println(_count);
       _Position[0][_count] = _val1;
       _Position[1][_count] = _val2;
@@ -257,22 +278,22 @@ void ARMbot::start()
     if(readButton2() == LOW)
     {
         setLed(1,0,1);
-        bip(3,150);
+        tick(3,1000,150);
         ParallelControl(20, _count);
-        bip(1,500);
+        tick(1,1000,500);
         k = 1;
         setLed(1,1,1);
     }
     if(readButton3() == LOW)
     {
       setLed(1,1,0);
-      bip(1,1000);
+      tick(1,1000,1000);
       for(int i=0;i<50;i++)
       {   
-        _Position[0][i] = 90;
-        _Position[1][i] = 90;
-        _Position[2][i] = 90;
-        _Position[3][i] = 90;
+        _Position[0][i] = _val1;
+        _Position[1][i] = _val2;
+        _Position[2][i] = _val3;
+        _Position[3][i] = _val4;
       }
       setLed(1,1,1);
     }

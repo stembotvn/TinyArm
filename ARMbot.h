@@ -60,6 +60,8 @@ public:
 	bool readButton1();
   	bool readButton2();
   	bool readButton3();
+  	void tone(uint16_t frequency, uint32_t duration);	// Hàm điều chỉnh âm điệu của còi
+	void tick(int n, uint16_t frequency, int times);
 private:
 	Servo _sv1;
 	Servo _sv2;
